@@ -1,0 +1,16 @@
+DECLARE @DynamicPivotQuery AS NVARCHAR(MAX)
+DECLARE @ColumnName AS NVARCHAR(MAX)
+
+--Get distinct values of the PIVOT Column 
+SELECT @ColumnName= ISNULL(@ColumnName + ',','') + QUOTENAME([Expense area])
+FROM (SELECT DISTINCT [Expense area] FROM [10L Comb_Expenditure_over_Threshold_Report_August_17]) AS area
+
+--Prepare the PIVOT query using the dynamic 
+SET @DynamicPivotQuery = 'select [Expense Type], ' + @ColumnName + ' 
+from
+  (SELECT [Expense Type], [Expense area], [AP Amount (£)]
+    FROM [10L Comb_Expenditure_over_Threshold_Report_August_17])x
+    PIVOT(SUM([AP Amount (£)]) 
+          FOR [Expense area] IN (' + @ColumnName + ')) AS PVTTable'
+--Execute the Dynamic Pivot Query
+EXEC sp_executesql @DynamicPivotQuery

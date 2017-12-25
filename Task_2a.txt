@@ -1,0 +1,3 @@
+select [Department family], sum([AP Amount (£)])
+from [10L Comb_Expenditure_over_Threshold_Report_August_17]
+group by [Department family]
